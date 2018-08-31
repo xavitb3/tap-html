@@ -11,7 +11,7 @@ class Plan extends React.Component {
     return tests.map((test) => test['tests'] ? this.getTotalAssertions(test) : test['assertions'].length).reduce((a, b) => a + b, 0);
   }
   render() {
-    const { start, end, tests, name, type, assertions } = this.props;
+    const { start, end, tests, name, type, assertions, show } = this.props;
 
     const style = {};
 
@@ -48,12 +48,19 @@ class Plan extends React.Component {
         </div>
         { assertions ?
           <ul className="list">
-            { assertions.map((assertion) => {
+            { assertions.filter(({ ok }) => 
+              show === "all"
+                ? true
+                : show === "success"
+                  ? ok === true
+                  : ok === false
+            ).map((assertion) => {
               return <Assertion {...assertion}/>
             })}
           </ul>
         : '' }
         { tests && tests.map((test) => {
+          test.show = show
           return <Plan {...test}/>
         })}
       </div>
